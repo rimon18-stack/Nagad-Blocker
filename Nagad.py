@@ -37,12 +37,17 @@ def main():
         # Clear the terminal screen
         clear_screen()
 
-        # Simple ASCII Art
-        ascii_art = """
-          _   _   _   _   _   _  
-         / \\ / \\ / \\ / \\ / \\ / \\ 
-        ( N | A | G | A | D | ! )
-         \\_/ \\_/ \\_/ \\_/ \\_/ \\_/ 
+        # Unique and Bold ASCII Art for "NAGAD"
+        ascii_art = """ 
+▗▖  ▗▖ ▗▄▖  ▗▄▄▖ ▗▄▖ ▗▄▄▄ 
+▐▛▚▖▐▌▐▌ ▐▌▐▌   ▐▌ ▐▌▐▌  █
+▐▌ ▝▜▌▐▛▀▜▌▐▌▝▜▌▐▛▀▜▌▐▌  █
+▐▌  ▐▌▐▌ ▐▌▝▚▄▞▘▐▌ ▐▌▐▙▄▄▀
+                            
+▗▄▄▖ ▗▖    ▗▄▖  ▗▄▄▖▗▖ ▗▖▗▄▄▄▖▗▄▄▖ 
+▐▌ ▐▌▐▌   ▐▌ ▐▌▐▌   ▐▌▗▞▘▐▌   ▐▌ ▐▌
+▐▛▀▚▖▐▌   ▐▌ ▐▌▐▌   ▐▛▚▖ ▐▛▀▀▘▐▛▀▚▖
+▐▙▄▞▘▐▙▄▄▖▝▚▄▞▘▝▚▄▄▖▐▌ ▐▌▐▙▄▄▖▐▌ ▐▌
         """
         print(Fore.RED + Style.BRIGHT + ascii_art)
         print(Fore.BLUE + "Welcome to the Nagad Blocker Tool")
