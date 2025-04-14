@@ -1,13 +1,8 @@
 {
-  "name": "nagad-locker-api",
+  "name": "nagad-lock-api",
   "version": "1.0.0",
-  "description": "Nagad target checker - for DynamicDevX by Tofazzal Hossain",
-  "main": "api/lock.js",
-  "type": "module",
-  "scripts": {
-    "start": "node api/lock.js"
-  },
   "dependencies": {
     "node-fetch": "^3.3.2"
-  }
+  },
+  "type": "module"
 }
